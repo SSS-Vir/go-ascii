@@ -3,6 +3,7 @@
 ```bash
 git clone https://github.com/SSS-Vir/go-ascii.git
 cd go-ascii
+go get go-ascii
 go build .
 ```
 #  Usage
