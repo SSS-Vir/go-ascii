@@ -1,10 +1,10 @@
 package main
 
 import (
-	"ascii-go/flags"
-	"ascii-go/pixelutil"
 	"github.com/disintegration/imaging"
 	tsize "github.com/kopoli/go-terminal-size"
+	"go-ascii/flags"
+	"go-ascii/pixelutil"
 	"image"
 	"image/gif"
 	"os"
