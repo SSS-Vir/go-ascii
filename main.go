@@ -21,12 +21,12 @@ func main() {
 	}
 	decodedGif, err := gif.DecodeAll(file)
 	if err != nil {
-		return
+		panic(err)
 	}
 
 	clearConsole()
 
-	for true {
+	for {
 		for frameIndex := 0; frameIndex < len(decodedGif.Image); frameIndex++ {
 
 			var final string
@@ -35,10 +35,10 @@ func main() {
 			var frame image.Image = decodedGif.Image[frameIndex]
 
 			if parameters.IsResized() {
-				frame = imaging.Resize(frame, parameters.Width, parameters.Height, imaging.NearestNeighbor)
+				frame = imaging.Resize(frame, parameters.Width, parameters.Height, parameters.ResampleFilter)
 			} else {
 				terminalSize, _ := tsize.GetSize()
-				frame = imaging.Resize(frame, terminalSize.Width/2, terminalSize.Height, imaging.MitchellNetravali)
+				frame = imaging.Resize(frame, terminalSize.Width/2, terminalSize.Height, parameters.ResampleFilter)
 			}
 
 			for i := 0; i < frame.Bounds().Dy(); i++ {

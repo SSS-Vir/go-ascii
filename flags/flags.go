@@ -4,17 +4,54 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"io/fs"
+	"github.com/disintegration/imaging"
 	"os"
 	"strconv"
 	"strings"
 )
 
+const ( // resample filters
+	NearestNeighbor   = "nearestneighbor"
+	Box               = "box"
+	Linear            = "linear"
+	Hermite           = "hermite"
+	MitchellNetravali = "mitchellnetravali"
+	CatmullRom        = "catmullrom"
+	BSpline           = "bspline"
+	Gaussian          = "gaussian"
+	Bartlett          = "bartlett"
+	Lanczos           = "lanczos"
+	Hann              = "hann"
+	Hamming           = "hamming"
+	Blackman          = "blackman"
+	Welch             = "welch"
+	Cosine            = "cosine"
+)
+
+var resampleFilters = map[string]imaging.ResampleFilter{
+	NearestNeighbor:   imaging.NearestNeighbor,
+	Box:               imaging.Box,
+	Linear:            imaging.Linear,
+	Hermite:           imaging.Hermite,
+	MitchellNetravali: imaging.MitchellNetravali,
+	CatmullRom:        imaging.CatmullRom,
+	BSpline:           imaging.BSpline,
+	Gaussian:          imaging.Gaussian,
+	Bartlett:          imaging.Bartlett,
+	Lanczos:           imaging.Lanczos,
+	Hann:              imaging.Hann,
+	Hamming:           imaging.Hamming,
+	Blackman:          imaging.Blackman,
+	Welch:             imaging.Welch,
+	Cosine:            imaging.Cosine,
+}
+
 type ApplicationParameters struct {
-	Filename string
-	Width    int
-	Height   int
-	Fps      uint
+	Filename       string
+	Width          int
+	Height         int
+	Fps            uint
+	ResampleFilter imaging.ResampleFilter
 }
 
 func (p *ApplicationParameters) IsResized() bool {
@@ -29,6 +66,7 @@ var (
 	fileName              string
 	size                  string
 	fps                   uint
+	resampleFilter        string
 	applicationParameters ApplicationParameters
 )
 
@@ -36,11 +74,12 @@ func init() {
 	flag.StringVar(&fileName, "file", "", "path to file in quotes e.g. \".\\path\\to\\file\"")
 	flag.StringVar(&size, "size", "", "non negative WIDTHxHEIGHT")
 	flag.UintVar(&fps, "fps", 18, "non negative num")
+	flag.StringVar(&resampleFilter, "resample", NearestNeighbor, fmt.Sprintf("One of %v", getResampleFiltersKeys()))
 
 	flag.Parse()
 
-	if !fs.ValidPath(fileName) || len(fileName) == 0 {
-		fmt.Printf("Not valid file path, %s", fileName)
+	if len(fileName) == 0 {
+		println("File name was not given")
 		os.Exit(0)
 	}
 	applicationParameters.Filename = fileName
@@ -52,6 +91,14 @@ func init() {
 	}
 	applicationParameters.Fps = fps
 
+	applicationParameters.ResampleFilter = resampleFilters[NearestNeighbor]
+
+	val, ok := resampleFilters[strings.ToLower(resampleFilter)]
+	if ok {
+		applicationParameters.ResampleFilter = val
+	}
+
+	resampleFilters = nil
 	return
 }
 
@@ -76,4 +123,12 @@ func parseSize(size string) (int, int, error) {
 
 func Get() ApplicationParameters {
 	return applicationParameters
+}
+
+func getResampleFiltersKeys() []string {
+	var keys []string
+	for k := range resampleFilters {
+		keys = append(keys, k)
+	}
+	return keys
 }
