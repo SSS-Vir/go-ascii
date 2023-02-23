@@ -26,7 +26,7 @@ func main() {
 
 	clearConsole()
 
-	for true {
+	for {
 		for frameIndex := 0; frameIndex < len(decodedGif.Image); frameIndex++ {
 
 			var final string
