@@ -15,7 +15,10 @@ import (
 func main() {
 	parameters := flags.Get()
 
-	file, _ := os.Open(parameters.Filename)
+	file, err := os.Open(parameters.Filename)
+	if err != nil {
+		panic(err)
+	}
 	decodedGif, err := gif.DecodeAll(file)
 	if err != nil {
 		return
@@ -33,14 +36,13 @@ func main() {
 
 			if parameters.IsResized() {
 				frame = imaging.Resize(frame, parameters.Width, parameters.Height, imaging.NearestNeighbor)
-
 			} else {
 				terminalSize, _ := tsize.GetSize()
-				frame = imaging.Resize(frame, terminalSize.Width/2, terminalSize.Height, imaging.NearestNeighbor)
+				frame = imaging.Resize(frame, terminalSize.Width/2, terminalSize.Height, imaging.MitchellNetravali)
 			}
 
 			for i := 0; i < frame.Bounds().Dy(); i++ {
-				middleImage(&final)
+				middleImage(&final, &parameters)
 				for j := 0; j < frame.Bounds().Dx(); j++ {
 					pixel := pixelutil.NewPixel(frame.At(j, i))
 					gradientSymbol := pixel.GradientSymbol()
@@ -65,9 +67,15 @@ func clearConsole() { //Windows
 	cmd.Run()
 }
 
-func middleImage(final *string) {
+func middleImage(final *string, parameters *flags.ApplicationParameters) {
+	var count int
 	terminalSize, _ := tsize.GetSize()
-	for t := 0; t < terminalSize.Width/4; t++ {
+	if parameters.IsResized() {
+		count = (terminalSize.Width - parameters.Width) / 2
+	} else {
+		count = terminalSize.Width / 4
+	}
+	for t := 0; t < count; t++ {
 		*final += " "
 	}
 }
