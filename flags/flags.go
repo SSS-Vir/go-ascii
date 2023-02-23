@@ -4,7 +4,6 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"io/fs"
 	"os"
 	"strconv"
 	"strings"
@@ -39,7 +38,7 @@ func init() {
 
 	flag.Parse()
 
-	if !fs.ValidPath(fileName) || len(fileName) == 0 {
+	if len(fileName) == 0 {
 		fmt.Printf("Not valid file path, %s", fileName)
 		os.Exit(0)
 	}
