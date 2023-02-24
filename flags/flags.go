@@ -47,7 +47,7 @@ var resampleFilters = map[string]imaging.ResampleFilter{
 }
 
 type ApplicationParameters struct {
-	Filename       string
+	Filepath       string
 	Width          int
 	Height         int
 	Fps            uint
@@ -63,7 +63,7 @@ func (p *ApplicationParameters) TimeForFrame() int64 {
 }
 
 var (
-	fileName              string
+	filepath              string
 	size                  string
 	fps                   uint
 	resampleFilter        string
@@ -71,18 +71,18 @@ var (
 )
 
 func init() {
-	flag.StringVar(&fileName, "file", "", "path to file in quotes e.g. \".\\path\\to\\file\"")
+	flag.StringVar(&filepath, "file", "", "path to file in quotes e.g. \".\\path\\to\\file\"")
 	flag.StringVar(&size, "size", "", "non negative WIDTHxHEIGHT")
 	flag.UintVar(&fps, "fps", 18, "non negative num")
 	flag.StringVar(&resampleFilter, "resample", NearestNeighbor, fmt.Sprintf("One of %v", getResampleFiltersKeys()))
 
 	flag.Parse()
 
-	if len(fileName) == 0 {
+	if len(filepath) == 0 {
 		println("File name was not given")
 		os.Exit(0)
 	}
-	applicationParameters.Filename = fileName
+	applicationParameters.Filepath = filepath
 	width, height, err := parseSize(size)
 	if err == nil {
 		// width and height can be 0
