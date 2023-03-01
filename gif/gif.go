@@ -26,7 +26,7 @@ func ASCII(parameters flags.ApplicationParameters) {
 	clearConsole()
 
 	for {
-		for frameIndex := 0; frameIndex < len(decodedGif.Image); frameIndex++ {
+		for frameIndex := range decodedGif.Image {
 			start := time.Now()
 
 			var frame image.Image = decodedGif.Image[frameIndex]
@@ -38,7 +38,7 @@ func ASCII(parameters flags.ApplicationParameters) {
 				frame = imaging.Resize(frame, terminalSize.Width/2, terminalSize.Height, parameters.ResampleFilter)
 			}
 
-			ascii := asciiutil.ImageToASCII(frame)
+			ascii := asciiutil.ImageToASCII(frame, parameters.Colored)
 			middleImage(&ascii, &parameters)
 			for _, line := range ascii {
 				print(line)

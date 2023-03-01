@@ -52,6 +52,7 @@ type ApplicationParameters struct {
 	Height         int
 	Fps            uint
 	ResampleFilter imaging.ResampleFilter
+	Colored        bool
 }
 
 func (p *ApplicationParameters) IsResized() bool {
@@ -68,6 +69,7 @@ var (
 	fps                   uint
 	resampleFilter        string
 	applicationParameters ApplicationParameters
+	colored               bool
 )
 
 func init() {
@@ -75,6 +77,7 @@ func init() {
 	flag.StringVar(&size, "size", "", "non negative WIDTHxHEIGHT")
 	flag.UintVar(&fps, "fps", 18, "non negative num")
 	flag.StringVar(&resampleFilter, "resample", NearestNeighbor, fmt.Sprintf("One of %v", getResampleFiltersKeys()))
+	flag.BoolVar(&colored, "colored", false, "should gif be colored or not")
 
 	flag.Parse()
 
@@ -97,6 +100,8 @@ func init() {
 	if ok {
 		applicationParameters.ResampleFilter = val
 	}
+
+	applicationParameters.Colored = colored
 
 	resampleFilters = nil
 	return

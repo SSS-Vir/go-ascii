@@ -29,5 +29,5 @@ func ASCII(parameters flags.ApplicationParameters) {
 		panic(err)
 	}
 	defer outfile.Close()
-	asciiutil.FImageToASCII(image, outfile)
+	asciiutil.FImageToASCII(image, outfile, false)
 }

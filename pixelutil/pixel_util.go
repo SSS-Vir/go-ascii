@@ -3,12 +3,15 @@ package pixelutil
 import (
 	"image/color"
 	"math"
+	"strconv"
 )
 
 const (
-	gradient     = " .:!/r(l1Z4H9W8$@"
-	gradientSize = len(gradient)
-	gradientStep = uint8(math.MaxUint8 / gradientSize)
+	gradient            = " .:!/r(l1Z4H9W8$@"
+	gradientSize        = len(gradient)
+	gradientStep        = uint8(math.MaxUint8 / gradientSize)
+	coloredSymbolPrefix = "\033[38;2;"
+	coloredSymbolReset  = "\033[0m"
 )
 
 type Pixel struct {
@@ -25,6 +28,19 @@ func (p *Pixel) GradientSymbol() string {
 		pixel--
 	}
 	return string(gradient[pixel/gradientStep])
+}
+
+func (p *Pixel) ColoredSymbol() string {
+
+	return coloredSymbolPrefix +
+		strconv.FormatUint(uint64(p.R), 10) +
+		";" +
+		strconv.FormatUint(uint64(p.G), 10) +
+		";" +
+		strconv.FormatUint(uint64(p.B), 10) +
+		"m" +
+		p.GradientSymbol() +
+		coloredSymbolReset
 }
 
 func NewPixel(color color.Color) *Pixel {
